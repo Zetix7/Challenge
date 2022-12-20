@@ -15,16 +15,23 @@ namespace ChallengeApp
         };
 
         public delegate void GradeAddedDelegate(object sender, EventArgs arg);
+        public delegate void NewArtistAddedDelegate(object sender, EventArgs arg);
+        public delegate void ArtistRemovedDelegate(object sender, EventArgs arg);
 
-        public FilmBase(string title)
+        public FilmBase(string title, string director)
         {
             this.Title = PascalCaseFormat(title);
+            this.Director = PascalCaseFormat(director);
         }
 
         public string Title { get; set; }
+        public string Director { get; set; }
 
         public abstract void AddGrade(double grade);
         public abstract Statistics GetStatistics();
+        public abstract void AddNewArtist(string firstName, string lastName);
+        public abstract void RemoveArtist(string firstName, string lastName);
+        public abstract void ShowCastOrMovieDetails(string input);
         
         public void AddGrade(string grade)
         {
@@ -92,6 +99,35 @@ namespace ChallengeApp
                     break;
                 default:
                     throw new ArgumentException("Enter value between A and E!");
+            }
+        }
+
+        protected static void CheckFormatNames(string firstName, string lastName)
+        {
+            if (string.IsNullOrWhiteSpace(firstName))
+            {
+                throw new ArgumentException("Enter correct first name! Only letters and space, but NOT only space!");
+            }
+
+            foreach (var firstNameLetter in firstName)
+            {
+                if (char.IsDigit(firstNameLetter))
+                {
+                    throw new FormatException("Enter correct first name! Only letters and space, but NOT only space!");
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                throw new ArgumentException("Enter correct last name! Only letters and space, but NOT only space!");
+            }
+
+            foreach (var lastNameletter in lastName)
+            {
+                if (char.IsDigit(lastNameletter))
+                {
+                    throw new FormatException("Enter correct last name! Only letters and space, but NOT only space!");
+                }
             }
         }
 

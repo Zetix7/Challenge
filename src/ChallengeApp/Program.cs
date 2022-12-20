@@ -7,10 +7,26 @@ namespace ChallengeApp
     {
         public static void Main(string[] args)
         {
-            var title = InsertTitle(out string input, out string message);
-            var inMemoryFilm = new InMemoryFilm(title);
-            var savedFilm = new SavedFilm(title);
+            WriteColor("Hello!  It is 'Movie Rating Program' and more...\n\n", ConsoleColor.Yellow);
+            var title = InsertTitleAndDirector(out string input, "Insert title of movie (ONLY LETTERS, DIGITS and SPACE (not ONLY space), default = Unknown): ");
+            var director = InsertTitleAndDirector(out input, "Insert director of movie (ONLY LETTERS, DIGITS and SPACE (not ONLY space), default = Unknown): ");
+            var inMemoryFilm = new InMemoryFilm(title, director);
+            var savedFilm = new SavedFilm(title, director);
             Console.WriteLine();
+
+            if(File.Exists(savedFilm.FileNameCast) && new FileInfo(savedFilm.FileNameCast).Length > 0)
+            {
+                AddSeparator();
+                WriteColor("[Replace ONLY here] ", ConsoleColor.DarkRed);
+                WriteColor($"Do you want replace director in file {savedFilm.FileNameCast} for this one: {savedFilm.Director}? (Y/N)\n", ConsoleColor.Cyan);
+                WriteColor("\tYour choice: ", ConsoleColor.Yellow);
+                input = Console.ReadLine().ToUpper().Trim();
+
+                if (input == "Y")
+                {
+                    savedFilm.ChangeDirectorInFile(savedFilm.Director);
+                }
+            }
 
             while (true)
             {
@@ -50,6 +66,44 @@ namespace ChallengeApp
                             ShowStatistics(inMemoryFilm);
                             continue;
                         }
+                        else if (input == "V")
+                        {
+                            SetNames(out string firstName, out string lastName);
+                            
+                            inMemoryFilm.NewArtistAdded += OnNewArtistAdded;
+                            ModifyCast(inMemoryFilm, firstName, lastName, input);
+                            inMemoryFilm.NewArtistAdded -= OnNewArtistAdded;
+                            continue;
+                        }
+                        else if (input == "X")
+                        {
+                            if (inMemoryFilm.IsEmptyCast())
+                            {
+                                AddSeparator();
+                                WriteColor("Cast is empty! Add at least one artist!\n", ConsoleColor.DarkRed);
+                                AddSeparator();
+                                continue;
+                            }
+                            
+                            SetNames(out string firstName, out string lastName);
+                            
+                            inMemoryFilm.ArtistRemoved += OnArtistRemoved;
+                            ModifyCast(inMemoryFilm, firstName, lastName, input);
+                            inMemoryFilm.ArtistRemoved -= OnArtistRemoved;
+                            continue;
+                        }
+                        else if (input == "Y")
+                        {
+                            AddSeparator();
+                            ShowCastOrMovieDetails(inMemoryFilm, input);
+                            continue;
+                        }
+                        else if (input == "Z")
+                        {                            
+                            AddSeparator();
+                            ShowCastOrMovieDetails(inMemoryFilm, input);
+                            continue;
+                        }
 
                         inMemoryFilm.GradeAdded += OnGradeAdded;
                         inMemoryFilm.GradeAddedUnder50 += OnGradeAddedUnder50;
@@ -79,6 +133,44 @@ namespace ChallengeApp
                         {
                             AddSeparator();
                             ShowStatistics(savedFilm);
+                            continue;
+                        }
+                        else if (input == "V")
+                        {
+                            SetNames(out string firstName, out string lastName);
+
+                            savedFilm.NewArtistAdded += OnNewArtistAdded;
+                            ModifyCast(savedFilm, firstName, lastName, input);
+                            savedFilm.NewArtistAdded -= OnNewArtistAdded;
+                            continue;
+                        }
+                        else if (input == "X")
+                        {
+                            if (!File.Exists(savedFilm.FileNameCast) || new FileInfo(savedFilm.FileNameCast).Length == 0)
+                            {
+                                AddSeparator();
+                                WriteColor("Cast is empty! Add at least one artist!\n", ConsoleColor.DarkRed);
+                                AddSeparator();
+                                continue;
+                            }
+
+                            SetNames(out string firstName, out string lastName);
+                            
+                            savedFilm.ArtistRemoved += OnArtistRemoved;
+                            ModifyCast(savedFilm, firstName, lastName, input);
+                            savedFilm.ArtistRemoved -= OnArtistRemoved;
+                            continue;
+                        }
+                        else if (input == "Y")
+                        {
+                            AddSeparator();
+                            ShowCastOrMovieDetails(savedFilm, input);
+                            continue;
+                        }
+                        else if (input == "Z")
+                        {
+                            AddSeparator();
+                            ShowCastOrMovieDetails(savedFilm, input);
                             continue;
                         }
 
@@ -114,6 +206,54 @@ namespace ChallengeApp
                             ShowStatistics(savedFilm);
                             continue;
                         }
+                        else if (input == "V")
+                        {
+                            SetNames(out string firstName, out string lastName);
+                            
+                            inMemoryFilm.NewArtistAdded += OnNewArtistAdded;
+                            ModifyCast(inMemoryFilm, firstName, lastName, input);
+                            inMemoryFilm.NewArtistAdded -= OnNewArtistAdded;
+
+                            savedFilm.NewArtistAdded += OnNewArtistAdded;
+                            ModifyCast(savedFilm, firstName, lastName, input);
+                            savedFilm.NewArtistAdded -= OnNewArtistAdded;
+                            continue;
+                        }
+                        else if (input == "X")
+                        {
+                            if (inMemoryFilm.IsEmptyCast() && (!File.Exists(savedFilm.FileNameCast) || File.Exists(savedFilm.FileNameCast) && new FileInfo(savedFilm.FileNameCast).Length == 0))
+                            {
+                                AddSeparator();
+                                WriteColor("Cast is empty! Add at least one artist!\n", ConsoleColor.DarkRed);
+                                AddSeparator();
+                                continue;
+                            }
+                            
+                            SetNames(out string firstName, out string lastName);
+
+                            inMemoryFilm.ArtistRemoved += OnArtistRemoved;
+                            ModifyCast(inMemoryFilm, firstName, lastName, input);
+                            inMemoryFilm.ArtistRemoved -= OnArtistRemoved;
+
+                            savedFilm.ArtistRemoved += OnArtistRemoved;
+                            ModifyCast(savedFilm, firstName, lastName, input);
+                            savedFilm.ArtistRemoved -= OnArtistRemoved;
+                            continue;
+                        }
+                        else if (input == "Y")
+                        {
+                            AddSeparator();
+                            ShowCastOrMovieDetails(inMemoryFilm, input);
+                            ShowCastOrMovieDetails(savedFilm, input);
+                            continue;
+                        }
+                        else if (input == "Z")
+                        {
+                            AddSeparator();
+                            ShowCastOrMovieDetails(inMemoryFilm, input);
+                            ShowCastOrMovieDetails(savedFilm, input);
+                            continue;
+                        }
 
                         inMemoryFilm.GradeAdded += OnGradeAdded;
                         inMemoryFilm.GradeAddedUnder50 += OnGradeAddedUnder50;
@@ -137,7 +277,12 @@ namespace ChallengeApp
         private static void ShowMenu()
         {
             WriteColor("Grade value must be between 0 and 100 or letter between \"A\" - \"E\" or \"A+\" - \"E+\" or \"A-\" - \"E-\".\n", ConsoleColor.Cyan);
-            Console.WriteLine(" Q - to back previous menu.\n S - to see current stats.\n");
+            Console.WriteLine(" Q - to back previous menu.\n" +
+                " S - to see current stats.\n" +
+                " V - to add new artist.\n" +
+                " X - to remove artist.\n" +
+                " Y - to see cast.\n" +
+                " Z - to see detail.\n");
             WriteColor("Choose one option or enter grade for movie:\n", ConsoleColor.Cyan);
         }
 
@@ -187,6 +332,74 @@ namespace ChallengeApp
             }
         }
 
+        private static void ModifyCast(IFilm iFilm, string firstName, string lastName, string input)
+        {
+            try
+            {
+                if(input == "V")
+                {
+                    iFilm.AddNewArtist(firstName, lastName);
+                }
+                else
+                {
+                    iFilm.RemoveArtist(firstName, lastName);
+                }
+            }
+            catch (FileNotFoundException fe)
+            {
+                WriteColor(fe.Message + "\n", ConsoleColor.DarkRed);
+            }
+            catch (IndexOutOfRangeException ie)
+            {
+                WriteColor(ie.Message + "\n", ConsoleColor.DarkRed);
+            }
+            catch (ArgumentException ae)
+            {
+                WriteColor(ae.Message + "\n", ConsoleColor.DarkRed);
+            }
+            catch (FormatException fe)
+            {
+                WriteColor(fe.Message + "\n", ConsoleColor.DarkRed);
+            }
+            finally
+            {
+                AddSeparator();
+            }
+        }
+
+        private static void SetNames(out string firstName, out string lastName)
+        {
+            AddSeparator();
+            WriteColor("Enter first name: ", ConsoleColor.Yellow);
+            firstName = Console.ReadLine();
+            WriteColor("Enter last name: ", ConsoleColor.Yellow);
+            lastName = Console.ReadLine();
+            AddSeparator();
+        }
+
+        private static void ShowCastOrMovieDetails(IFilm iFilm, string input)
+        {
+            try
+            {
+                iFilm.ShowCastOrMovieDetails(input);
+                WriteColor("Press any key...", ConsoleColor.Green);
+                Console.ReadKey();
+                Console.WriteLine();
+            }
+            catch (FileNotFoundException fe)
+            {
+                WriteColor(fe.Message + "\n", ConsoleColor.DarkRed);
+            }
+            catch (IndexOutOfRangeException ie)
+            {
+                WriteColor(ie.Message + "\n", ConsoleColor.DarkRed);
+            }
+            finally
+            {
+                AddSeparator();
+            }
+        }
+
         private static bool AddNewGrade(IFilm iFilm, string input)
         {
             var result = false;
@@ -213,10 +426,8 @@ namespace ChallengeApp
             return result;
         }
 
-        private static string InsertTitle(out string input, out string message)
+        private static string InsertTitleAndDirector(out string input, string message)
         {
-            message = "Hello!  It is 'Movie Rating Program'\n\n"
-                + "Insert title of movie (ONLY LETTERS, DIGITS and SPACE (not ONLY space), default = Unknown): ";
             WriteColor(message, ConsoleColor.Yellow);
             input = Console.ReadLine();
             if (!string.IsNullOrWhiteSpace(input))
@@ -233,6 +444,30 @@ namespace ChallengeApp
             else
             {
                 return "Unknown";
+            }
+        }
+
+        private static void OnArtistRemoved(object sender, EventArgs e)
+        {
+            if (sender.GetType().Equals(typeof(InMemoryFilm)))
+            {
+                WriteColor("--- Artist removed from cast.\n", ConsoleColor.Green);
+            }
+            else
+            {
+                WriteColor("--- Artist removed from file.\n", ConsoleColor.Green);
+            }
+        }
+
+        private static void OnNewArtistAdded(object sender, EventArgs e)
+        {
+            if (sender.GetType().Equals(typeof(InMemoryFilm)))
+            {
+                WriteColor("--- New artist added to cast.\n", ConsoleColor.Green);
+            }
+            else
+            {
+                WriteColor("--- New artist added to file.\n", ConsoleColor.Green);
             }
         }
 

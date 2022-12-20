@@ -36,8 +36,8 @@ namespace Challenge.Tests
         [Fact]
         public void GetFilmReturnsDifferentObjects()
         {
-            var film1 = GetFilm("Star Wars");
-            var film2 = GetFilm("Avengers");
+            var film1 = GetFilm("Star Wars","George Lucas");
+            var film2 = GetFilm("Avengers","Anthony Russo");
 
             Assert.Equal("Star Wars", film1.Title);
             Assert.Equal("Avengers", film2.Title);
@@ -48,7 +48,7 @@ namespace Challenge.Tests
         [Fact]
         public void TwoVarsCanReferenceSameObject()
         {
-            var film1 = GetFilm("Star Wras");
+            var film1 = GetFilm("Star Wras","George Lucas");
             var film2 = film1;
 
             Assert.True(film1.Equals(film2));
@@ -60,7 +60,7 @@ namespace Challenge.Tests
         public void CSharpCanPassByRef()
         {
             InMemoryFilm film = null;// GetFilm("Star Wars");
-            GetFilmSetTitle(out film, "New Title");
+            GetFilmSetTitle(out film, "New Title", "New Director");
             Assert.Equal("New Title", film.Title);
         }
 
@@ -72,7 +72,7 @@ namespace Challenge.Tests
         [Fact]
         public void CanSetTitleFromReference()
         {
-            var film1 = GetFilm("Starwars");
+            var film1 = GetFilm("Starwars","George Lucas");
             this.SetTitle(film1, "New Title");
             Assert.Equal("New Title", film1.Title);
         }
