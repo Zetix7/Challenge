@@ -64,9 +64,9 @@ namespace Challenge.Tests
             Assert.Equal("New Title", film.Title);
         }
 
-        private void GetFilmSetTitle(out InMemoryFilm film, string title, string director)
+        private void GetFilmSetTitle(out InMemoryFilm film, string title)
         {
-            film = GetFilm(title, director);
+            film = GetFilm(title);
         }
 
         [Fact]
@@ -77,9 +77,9 @@ namespace Challenge.Tests
             Assert.Equal("New Title", film1.Title);
         }
 
-        private InMemoryFilm GetFilm(string title, string director)
+        private InMemoryFilm GetFilm(string title)
         {
-            return new InMemoryFilm(title, director);
+            return new InMemoryFilm(title);
         }
 
         private void SetTitle(InMemoryFilm film, string title)

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using static ChallengeApp.IFilm;
 
 namespace ChallengeApp
 {
     class SavedFilm : FilmBase
     {
         private const string FILENAME_GRADES = "-Grades.txt";
-        private string titleFileName;
+        private readonly string titleFileName;
         private readonly string fileNameGrades;
 
         public SavedFilm(string title) : base(title)
@@ -21,8 +22,8 @@ namespace ChallengeApp
             get { return fileNameGrades; }
         }
 
-        public event GradeAddedDelegate GradeAdded;
-        public event GradeAddedDelegate GradeAddedUnder50;
+        public override event GradeAddedDelegate GradeAdded;
+        public override event GradeAddedDelegate GradeAddedUnder50;
 
         public override void AddGrade(double grade)
         {

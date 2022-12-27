@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using static ChallengeApp.IFilm;
 
 namespace ChallengeApp
 {
@@ -14,12 +15,13 @@ namespace ChallengeApp
             { 'E', 10 }
         };
 
-        public delegate void GradeAddedDelegate(object sender, EventArgs arg);
-
         public FilmBase(string title)
         {
             this.Title = PascalCaseFormat(title);
         }
+
+        public abstract event GradeAddedDelegate GradeAdded;
+        public abstract event GradeAddedDelegate GradeAddedUnder50;
 
         public string Title { get; set; }
 

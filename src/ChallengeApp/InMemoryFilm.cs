@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
+using static ChallengeApp.IFilm;
 
 namespace ChallengeApp
 {
     public class InMemoryFilm : FilmBase
     {
-        private List<double> grades = new();
+        private readonly List<double> grades = new();
 
         public InMemoryFilm(string title) : base(title) { }
 
-        public event GradeAddedDelegate GradeAdded;
-        public event GradeAddedDelegate GradeAddedUnder50;
+        public override event GradeAddedDelegate GradeAdded;
+        public override event GradeAddedDelegate GradeAddedUnder50;
 
         public override void AddGrade(double grade)
         {

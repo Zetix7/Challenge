@@ -7,7 +7,7 @@ namespace ChallengeApp
     {
         public static void Main(string[] args)
         {
-            var title = InsertTitle(out string input, out string message);
+            var title = InsertTitle();
             var inMemoryFilm = new InMemoryFilm(title);
             var savedFilm = new SavedFilm(title);
             Console.WriteLine();
@@ -17,7 +17,7 @@ namespace ChallengeApp
                 AddSeparator();
                 WriteColor("Where do you want save grades? Memory (1) or file (2) or both (3)? \"Q\" is exit the program.\n", ConsoleColor.Cyan);
                 WriteColor("\tYour choice: ", ConsoleColor.Yellow);
-                input = Console.ReadLine().ToUpper().Trim();
+                var input = Console.ReadLine().ToUpper().Trim();
                 Console.WriteLine();
                 AddSeparator();
 
@@ -51,13 +51,9 @@ namespace ChallengeApp
                             continue;
                         }
 
-                        inMemoryFilm.GradeAdded += OnGradeAdded;
-                        inMemoryFilm.GradeAddedUnder50 += OnGradeAddedUnder50;
                         AddSeparator();
-                        AddNewGrade(inMemoryFilm, input);
+                        AddNewGrade(inMemoryFilm, input, "");
                         AddSeparator();
-                        inMemoryFilm.GradeAdded -= OnGradeAdded;
-                        inMemoryFilm.GradeAddedUnder50 -= OnGradeAddedUnder50;
                     }
                 }
                 else if (input == "2")
@@ -82,19 +78,17 @@ namespace ChallengeApp
                             continue;
                         }
 
-                        savedFilm.GradeAdded += OnGradeAdded;
-                        savedFilm.GradeAddedUnder50 += OnGradeAddedUnder50;
                         AddSeparator();
-                        AddNewGrade(savedFilm, input);
+                        AddNewGrade(savedFilm, input, "");
                         AddSeparator();
-                        savedFilm.GradeAdded -= OnGradeAdded;
-                        savedFilm.GradeAddedUnder50 -= OnGradeAddedUnder50;
                     }
                 }
                 else if (input == "3")
                 {
                     WriteColor($"******* NOW YOU ARE SAVING GRADE TO MEMORY AND FILE '{savedFilm.FileNameGrades}' *******\n", ConsoleColor.Green);
                     AddSeparator();
+
+                    var choise = input;
 
                     while (true)
                     {
@@ -115,16 +109,12 @@ namespace ChallengeApp
                             continue;
                         }
 
-                        inMemoryFilm.GradeAdded += OnGradeAdded;
-                        inMemoryFilm.GradeAddedUnder50 += OnGradeAddedUnder50;
                         AddSeparator();
-                        if (AddNewGrade(inMemoryFilm, input))
+                        if (AddNewGrade(inMemoryFilm, input, choise))
                         {
-                            AddNewGrade(savedFilm, input);
+                            AddNewGrade(savedFilm, input, choise);
                         }
                         AddSeparator();
-                        inMemoryFilm.GradeAdded -= OnGradeAdded;
-                        inMemoryFilm.GradeAddedUnder50 -= OnGradeAddedUnder50;
                     }
                 }
                 else
@@ -141,14 +131,14 @@ namespace ChallengeApp
             WriteColor("Choose one option or enter grade for movie:\n", ConsoleColor.Cyan);
         }
 
-        private static void ShowStatistics(IFilm iFilm)
+        private static void ShowStatistics(IFilm film)
         {
             try
             {
-                var statsIFilm = iFilm.GetStatistics();
-                if (statsIFilm.Total == 0)
+                var statsFilm = film.GetStatistics();
+                if (statsFilm.Total == 0)
                 {
-                    if (iFilm.GetType().Equals(typeof(InMemoryFilm)))
+                    if (film.GetType().Equals(typeof(InMemoryFilm)))
                     {
                         WriteColor($"IN MEMORY : Grades is empty.\n", ConsoleColor.DarkRed);
                     }
@@ -159,19 +149,19 @@ namespace ChallengeApp
                 }
                 else
                 {
-                    if (iFilm.GetType().Equals(typeof(InMemoryFilm)))
+                    if (film.GetType().Equals(typeof(InMemoryFilm)))
                     {
-                        Console.WriteLine($"IN MEMORY : Title: {iFilm.Title}\n\tTotal grades is {statsIFilm.Total}.");
+                        Console.WriteLine($"IN MEMORY : Title: {film.Title}\n\tTotal grades is {statsFilm.Total}.");
                     }
                     else
                     {
-                        Console.WriteLine($"IN FILE : Title: {iFilm.Title}\n\tTotal grades is {statsIFilm.Total}.");
+                        Console.WriteLine($"IN FILE : Title: {film.Title}\n\tTotal grades is {statsFilm.Total}.");
                     }
 
-                    Console.WriteLine($"\tLowest grade is {statsIFilm.Low:N2}.");
-                    Console.WriteLine($"\tHighest grade is {statsIFilm.High:N2}.");
-                    Console.WriteLine($"\tAverage grade is {statsIFilm.Average:N2}.");
-                    Console.WriteLine($"\tLetter: {statsIFilm.Letter}");
+                    Console.WriteLine($"\tLowest grade is {statsFilm.Low:N2}.");
+                    Console.WriteLine($"\tHighest grade is {statsFilm.High:N2}.");
+                    Console.WriteLine($"\tAverage grade is {statsFilm.Average:N2}.");
+                    Console.WriteLine($"\tLetter: {statsFilm.Letter}");
                     WriteColor("Press any key...", ConsoleColor.Green);
                     Console.ReadKey();
                     Console.WriteLine();
@@ -187,18 +177,23 @@ namespace ChallengeApp
             }
         }
 
-        private static bool AddNewGrade(IFilm iFilm, string input)
+        private static bool AddNewGrade(IFilm film, string input, string choise)
         {
             var result = false;
             try
             {
+                if (choise != "3" || film.GetType().Equals(typeof(InMemoryFilm)))
+                {
+                    film.GradeAdded += OnGradeAdded;
+                    film.GradeAddedUnder50 += OnGradeAddedUnder50;
+                }
                 if (input.Length == 1 && char.IsLetter(input[0]))
                 {
-                    iFilm.AddGrade(input[0]);
+                    film.AddGrade(input[0]);
                 }
                 else
                 {
-                    iFilm.AddGrade(input);
+                    film.AddGrade(input);
                 }
                 result = true;
             }
@@ -210,15 +205,19 @@ namespace ChallengeApp
             {
                 WriteColor(ae.Message + "\n", ConsoleColor.DarkRed);
             }
+            finally 
+            {
+                film.GradeAdded -= OnGradeAdded;
+                film.GradeAddedUnder50 -= OnGradeAddedUnder50;
+            }
             return result;
         }
 
-        private static string InsertTitle(out string input, out string message)
+        private static string InsertTitle()
         {
-            message = "Hello!  It is 'Movie Rating Program'\n\n"
-                + "Insert title of movie (ONLY LETTERS, DIGITS and SPACE (not ONLY space), default = Unknown): ";
-            WriteColor(message, ConsoleColor.Yellow);
-            input = Console.ReadLine();
+            WriteColor("Hello! It is 'Movie Rating Program'\n\n"
+                + "Insert title of movie (ONLY LETTERS, DIGITS and SPACE (not ONLY space), default = Unknown): ", ConsoleColor.Yellow);
+            var input = Console.ReadLine();
             if (!string.IsNullOrWhiteSpace(input))
             {
                 foreach (var letter in input)
