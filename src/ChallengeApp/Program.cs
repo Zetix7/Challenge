@@ -232,8 +232,10 @@ namespace ChallengeApp
                         }
 
                         AddSeparator();
-                        AddNewGrade(inMemoryFilm, input, choise);
-                        AddNewGrade(savedFilm, input, choise);
+                        if (AddNewGrade(inMemoryFilm, input, choise))
+                        {
+                            AddNewGrade(savedFilm, input, choise);
+                        }
                         AddSeparator();
                     }
                 }
@@ -374,8 +376,9 @@ namespace ChallengeApp
             }
         }
 
-        private static void AddNewGrade(IFilm film, string input, string choise)
+        private static bool AddNewGrade(IFilm film, string input, string choise)
         {
+            var result = false;
             try
             {
                 if(choise != "3" || film.GetType().Equals(typeof(InMemoryFilm))) 
@@ -391,6 +394,7 @@ namespace ChallengeApp
                 {
                     film.AddGrade(input);
                 }
+                result = true;
             }
             catch (FormatException fe)
             {
@@ -405,6 +409,7 @@ namespace ChallengeApp
                 film.GradeAdded -= OnGradeAdded;
                 film.GradeAddedUnder50 -= OnGradeAddedUnder50;
             }
+            return result;
         }
 
         private static string InsertTitleAndDirector(out string input, string message)
