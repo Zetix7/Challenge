@@ -14,9 +14,10 @@ namespace ChallengeApp
             { 'E', 10 }
         };
 
-        public delegate void GradeAddedDelegate(object sender, EventArgs arg);
-        public delegate void NewArtistAddedDelegate(object sender, EventArgs arg);
-        public delegate void ArtistRemovedDelegate(object sender, EventArgs arg);
+        public abstract event IFilm.GradeAddedDelegate GradeAdded;
+        public abstract event IFilm.GradeAddedDelegate GradeAddedUnder50;
+        public abstract event IFilm.NewArtistAddedDelegate NewArtistAdded;
+        public abstract event IFilm.ArtistRemovedDelegate ArtistRemoved;
 
         public FilmBase(string title, string director)
         {
@@ -102,31 +103,18 @@ namespace ChallengeApp
             }
         }
 
-        protected static void CheckFormatNames(string firstName, string lastName)
+        protected static void CheckFormatName(string name)
         {
-            if (string.IsNullOrWhiteSpace(firstName))
+            if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("Enter correct first name! Only letters and space, but NOT only space!");
+                throw new ArgumentException("Enter correct name! Only letters and space, but NOT only space!");
             }
 
-            foreach (var firstNameLetter in firstName)
+            foreach (var firstNameLetter in name)
             {
                 if (char.IsDigit(firstNameLetter))
                 {
-                    throw new FormatException("Enter correct first name! Only letters and space, but NOT only space!");
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(lastName))
-            {
-                throw new ArgumentException("Enter correct last name! Only letters and space, but NOT only space!");
-            }
-
-            foreach (var lastNameletter in lastName)
-            {
-                if (char.IsDigit(lastNameletter))
-                {
-                    throw new FormatException("Enter correct last name! Only letters and space, but NOT only space!");
+                    throw new FormatException("Enter correct name! Only letters and space, but NOT only space!");
                 }
             }
         }

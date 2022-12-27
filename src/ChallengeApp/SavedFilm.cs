@@ -8,7 +8,7 @@ namespace ChallengeApp
     {
         private const string FILENAME_GRADES = "-Grades.txt";
         private const string FILENAME_CAST = "-Cast.txt";
-        private string titleFileName;
+        private readonly string titleFileName;
         private readonly string fileNameGrades;
         private readonly string fileNameCast;
 
@@ -29,10 +29,10 @@ namespace ChallengeApp
             get { return fileNameCast; }
         }
 
-        public event GradeAddedDelegate GradeAdded;
-        public event GradeAddedDelegate GradeAddedUnder50;
-        public event NewArtistAddedDelegate NewArtistAdded;
-        public event ArtistRemovedDelegate ArtistRemoved;
+        public override event IFilm.GradeAddedDelegate GradeAdded;
+        public override event IFilm.GradeAddedDelegate GradeAddedUnder50;
+        public override event IFilm.NewArtistAddedDelegate NewArtistAdded;
+        public override event IFilm.ArtistRemovedDelegate ArtistRemoved;
 
         public override void AddGrade(double grade)
         {
@@ -82,7 +82,8 @@ namespace ChallengeApp
 
         public override void AddNewArtist(string firstName, string lastName)
         {
-            CheckFormatNames(firstName, lastName);
+            CheckFormatName(firstName);
+            CheckFormatName(lastName);
             string artist = $"{PascalCaseFormat(firstName)} {PascalCaseFormat(lastName)}";
 
             if (!File.Exists(fileNameCast) || (File.Exists(fileNameCast) && new FileInfo(fileNameCast).Length == 0))
@@ -124,7 +125,8 @@ namespace ChallengeApp
 
         public override void RemoveArtist(string firstName, string lastName)
         {
-            CheckFormatNames(firstName, lastName);
+            CheckFormatName(firstName);
+            CheckFormatName(lastName);
             string artist = $"{PascalCaseFormat(firstName)} {PascalCaseFormat(lastName)}";
 
             if (!File.Exists(fileNameCast))

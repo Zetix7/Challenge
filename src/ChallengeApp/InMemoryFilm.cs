@@ -5,15 +5,15 @@ namespace ChallengeApp
 {
     public class InMemoryFilm : FilmBase
     {
-        private List<double> grades = new();
-        private List<string> cast = new();
+        private readonly List<double> grades = new();
+        private readonly List<string> cast = new();
 
         public InMemoryFilm(string title, string director) : base(title, director) { }
 
-        public event GradeAddedDelegate GradeAdded;
-        public event GradeAddedDelegate GradeAddedUnder50;
-        public event NewArtistAddedDelegate NewArtistAdded;
-        public event ArtistRemovedDelegate ArtistRemoved;
+        public override event IFilm.GradeAddedDelegate GradeAdded;
+        public override event IFilm.GradeAddedDelegate GradeAddedUnder50;
+        public override event IFilm.NewArtistAddedDelegate NewArtistAdded;
+        public override event IFilm.ArtistRemovedDelegate ArtistRemoved;
 
         public override void AddGrade(double grade)
         {
@@ -49,7 +49,8 @@ namespace ChallengeApp
 
         public override void AddNewArtist(string firstName, string lastName)
         {
-            CheckFormatNames(firstName, lastName);
+            CheckFormatName(firstName);
+            CheckFormatName(lastName);
             string artist = $"{PascalCaseFormat(firstName)} {PascalCaseFormat(lastName)}";
 
             if (cast.Contains(artist))
@@ -73,7 +74,8 @@ namespace ChallengeApp
                 throw new IndexOutOfRangeException("Cast is empty! Add at least one artist!");
             }
 
-            CheckFormatNames(firstName, lastName);
+            CheckFormatName(firstName);
+            CheckFormatName(lastName);
             string artist = $"{PascalCaseFormat(firstName)} {PascalCaseFormat(lastName)}";
 
             if (!cast.Contains(artist))

@@ -21,17 +21,6 @@ namespace Challenge.Tests
             Assert.Equal(2, counter);
         }
 
-        private string ReturnMessage(string message)
-        {
-            counter++;
-            return message;
-        }
-
-        private string ReturnMessageToLower(string message)
-        {
-            counter++;
-            return message.ToLower();
-        }
 
         [Fact]
         public void GetFilmReturnsDifferentObjects()
@@ -64,17 +53,48 @@ namespace Challenge.Tests
             Assert.Equal("New Title", film.Title);
         }
 
-        private void GetFilmSetTitle(out InMemoryFilm film, string title, string director)
-        {
-            film = GetFilm(title, director);
-        }
-
         [Fact]
         public void CanSetTitleFromReference()
         {
             var film1 = GetFilm("Starwars","George Lucas");
             this.SetTitle(film1, "New Title");
             Assert.Equal("New Title", film1.Title);
+        }
+
+        [Fact]
+        public void SetIntByReference()
+        {
+            var x = GetInt();
+            SetInt(ref x);
+
+            Assert.Equal(7, x);
+        }
+
+        [Fact]
+        public void StringsBehaveLikeValueType()
+        {
+            var x = "Star Wars";
+            var upper = this.MakeUpperCase(x);
+
+            Assert.Equal("Star Wars", x);
+            Assert.Equal("STAR WARS", upper);
+        }
+
+        private string ReturnMessage(string message)
+        {
+            counter++;
+            return message;
+        }
+
+        private string ReturnMessageToLower(string message)
+        {
+            counter++;
+            return message.ToLower();
+        }
+
+        private void GetFilmSetTitle(out InMemoryFilm film, string title, string director)
+        {
+            film = GetFilm(title, director);
         }
 
         private InMemoryFilm GetFilm(string title, string director)
@@ -87,14 +107,6 @@ namespace Challenge.Tests
             film.Title = title;
         }
 
-        [Fact]
-        public void SetIntByReference()
-        {
-            var x = GetInt();
-            SetInt(ref x);
-
-            Assert.Equal(7, x);
-        }
 
         private int GetInt()
         {
@@ -104,16 +116,6 @@ namespace Challenge.Tests
         private void SetInt(ref int x)
         {
             x = 7;
-        }
-
-        [Fact]
-        public void StringsBehaveLikeValueType()
-        {
-            var x = "Star Wars";
-            var upper = this.MakeUpperCase(x);
-
-            Assert.Equal("Star Wars", x);
-            Assert.Equal("STAR WARS", upper);
         }
 
         private string MakeUpperCase(string parametr)
